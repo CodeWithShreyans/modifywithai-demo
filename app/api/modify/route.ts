@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
 				githubUsername: "codewithshreyans",
 				githubRepo: "modifywithai-demo",
 				githubInstallationId: "93751008",
+				commitToMain: false,
 			}),
 		})
 

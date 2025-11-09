@@ -17,6 +17,13 @@ export async function POST(req: NextRequest) {
 				"Content-Type": "application/json",
 				"x-api-key": process.env.MODIFYWITHAI_API_KEY || "",
 			},
+			body: JSON.stringify({
+				userId: session.user.id,
+				githubUsername: "codewithshreyans",
+				githubRepo: "modifywithai-demo",
+				githubInstallationId: "93751008",
+				commitToMain: false,
+			}),
 		})
 
 		if (!response.ok) {
