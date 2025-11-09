@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "**.vercel.app",
 			},
+			{
+				protocol: "https",
+				hostname: "**.githubusercontent.com",
+			},
+			{
+				protocol: "https",
+				hostname: "**.dicebear.com",
+			},
 		],
 	},
 }
