@@ -12,7 +12,7 @@ export async function proxy(request: NextRequest) {
 		authObject?.user?.hasCustomDeployment
 	) {
 		const newUrl = request.nextUrl.clone()
-		newUrl.hostname = `vibeware-demo-git-modifywithai-${authObject.user.id}-codewithshreyans.vercel.app`
+		newUrl.hostname = `modifywithai-demo-git-modifywithai-${authObject.user.id}-codewithshreyans.vercel.app`
 		return NextResponse.rewrite(newUrl)
 	}
 	return NextResponse.next()
