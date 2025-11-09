@@ -55,6 +55,8 @@ export function ConnectionSuggestions() {
 				<div key={user.id} className="rounded-lg border border-gray-200 bg-white p-4">
 					<ConnectionCard
 						user={user}
+						connectionStatus={user.connectionStatus || "none"}
+						connectionId={user.connectionId}
 						onConnectionChange={() => {
 							setSuggestions(suggestions.filter((s) => s.id !== user.id))
 						}}

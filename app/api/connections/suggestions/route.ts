@@ -15,22 +15,31 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		// Get IDs of users already connected or with pending requests
-		const existingConnections = await db
-			.select({ userId: connections.requesterId, addresseeId: connections.addresseeId })
-			.from(connections)
-			.where(
-				or(
-					eq(connections.requesterId, session.user.id),
-					eq(connections.addresseeId, session.user.id),
-				),
-			)
+	// Get IDs of users already connected or with pending requests
+	const existingConnections = await db
+		.select({ 
+			userId: connections.requesterId, 
+			addresseeId: connections.addresseeId,
+			status: connections.status,
+			id: connections.id
+		})
+		.from(connections)
+		.where(
+			or(
+				eq(connections.requesterId, session.user.id),
+				eq(connections.addresseeId, session.user.id),
+			),
+		)
 
-		const excludedUserIds = new Set<string>([session.user.id])
-		for (const conn of existingConnections) {
-			excludedUserIds.add(conn.userId)
-			excludedUserIds.add(conn.addresseeId)
-		}
+	const excludedUserIds = new Set<string>([session.user.id])
+	const connectionMap = new Map<string, { status: string, id: string }>()
+	
+	for (const conn of existingConnections) {
+		const otherUserId = conn.userId === session.user.id ? conn.addresseeId : conn.userId
+		excludedUserIds.add(conn.userId)
+		excludedUserIds.add(conn.addresseeId)
+		connectionMap.set(otherUserId, { status: conn.status, id: conn.id })
+	}
 
 		// Get users not in the excluded list
 		let suggestions
@@ -63,7 +72,19 @@ export async function GET(request: NextRequest) {
 				.limit(10)
 		}
 
-		return NextResponse.json({ suggestions })
+		// Add connection status to suggestions (as a safety measure)
+	const suggestionsWithStatus = suggestions.map(user => {
+		const connectionInfo = connectionMap.get(user.id)
+		return {
+			...user,
+			connectionStatus: connectionInfo 
+				? (connectionInfo.status === "accepted" ? "connected" : "pending")
+				: "none",
+			connectionId: connectionInfo?.id
+		}
+	})
+
+	return NextResponse.json({ suggestions: suggestionsWithStatus })
 	} catch (error) {
 		console.error("Error fetching connection suggestions:", error)
 		return NextResponse.json(

@@ -11,6 +11,7 @@ export function Navbar() {
 	const [unreadMessages, setUnreadMessages] = useState(0)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [aiInput, setAiInput] = useState("")
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	useEffect(() => {
 		if (session?.user) {
@@ -250,38 +251,40 @@ export function Navbar() {
 							>
 								Cancel
 							</button>
-							<button
-								onClick={async () => {
-									try {
-										const response = await fetch("/api/modify", {
-											method: "POST",
-											headers: {
-												"Content-Type": "application/json",
-											},
-											body: JSON.stringify({
-												prompt: aiInput,
-											}),
-										})
+						<button
+							onClick={async () => {
+								setIsSubmitting(true)
+								try {
+									const response = await fetch("/api/modify", {
+										method: "POST",
+										headers: {
+											"Content-Type": "application/json",
+										},
+										body: JSON.stringify({
+											prompt: aiInput,
+										}),
+									})
 
-										if (response.ok) {
-											const data = await response.json()
-											console.log("AI Response:", data)
-											// Handle success
-										} else {
-											console.error("API Error:", response.statusText)
-										}
-									} catch (error) {
-										console.error("Failed to submit:", error)
-									} finally {
-										setIsModalOpen(false)
-										setAiInput("")
+									if (response.ok) {
+										const data = await response.json()
+										console.log("AI Response:", data)
+										// Handle success
+									} else {
+										console.error("API Error:", response.statusText)
 									}
-								}}
-								disabled={!aiInput.trim()}
-								className="rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-							>
-								Submit
-							</button>
+								} catch (error) {
+									console.error("Failed to submit:", error)
+								} finally {
+									setIsSubmitting(false)
+									setIsModalOpen(false)
+									setAiInput("")
+								}
+							}}
+							disabled={!aiInput.trim() || isSubmitting}
+							className="rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							{isSubmitting ? "Submitting..." : "Submit"}
+						</button>
 						</div>
 					</div>
 				</div>

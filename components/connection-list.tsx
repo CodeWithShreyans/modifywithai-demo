@@ -83,7 +83,11 @@ export function ConnectionList({ status = "pending" }: ConnectionListProps) {
 							email: connection.userEmail,
 							image: connection.userImage,
 						}}
-						connectionStatus={status as "pending" | "none" | "connected"}
+						connectionStatus={
+							status === "accepted"
+								? "connected"
+								: (status as "pending" | "none" | "connected")
+						}
 						connectionId={connection.id}
 						onConnectionChange={fetchConnections}
 					/>

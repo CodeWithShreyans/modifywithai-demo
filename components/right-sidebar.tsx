@@ -49,6 +49,8 @@ export function RightSidebar() {
 							<ConnectionCard
 								key={user.id}
 								user={user}
+								connectionStatus={user.connectionStatus || "none"}
+								connectionId={user.connectionId}
 								onConnectionChange={() => {
 									setSuggestions(suggestions.filter((s) => s.id !== user.id))
 								}}

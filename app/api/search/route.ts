@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { user, posts, profiles } from "@/lib/db/schema"
-import { like, or, desc } from "drizzle-orm"
+import { user, posts, profiles, connections } from "@/lib/db/schema"
+import { like, or, desc, eq } from "drizzle-orm"
 
 // GET /api/search - Search users and posts
 export async function GET(request: NextRequest) {
@@ -32,30 +32,67 @@ export async function GET(request: NextRequest) {
 			posts?: Array<any>
 		} = {}
 
-		// Search users
-		if (type === "all" || type === "users") {
-			const users = await db
-				.select({
-					id: user.id,
-					name: user.name,
-					email: user.email,
-					image: user.image,
-					headline: profiles.headline,
-					location: profiles.location,
-				})
-				.from(user)
-				.leftJoin(profiles, or(user.id, profiles.userId))
-				.where(
-					or(
-						like(user.name, searchTerm),
-						like(user.email, searchTerm),
-						like(profiles.headline, searchTerm),
-					),
-				)
-				.limit(20)
+	// Search users
+	if (type === "all" || type === "users") {
+		const users = await db
+			.select({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				image: user.image,
+				headline: profiles.headline,
+				location: profiles.location,
+			})
+			.from(user)
+			.leftJoin(profiles, or(user.id, profiles.userId))
+			.where(
+				or(
+					like(user.name, searchTerm),
+					like(user.email, searchTerm),
+					like(profiles.headline, searchTerm),
+				),
+			)
+			.limit(20)
 
-			results.users = users
+		// Get connection status for each user
+		const userConnections = await db
+			.select({
+				userId: connections.requesterId,
+				addresseeId: connections.addresseeId,
+				status: connections.status,
+				id: connections.id,
+			})
+			.from(connections)
+			.where(
+				or(
+					eq(connections.requesterId, session.user.id),
+					eq(connections.addresseeId, session.user.id),
+				),
+			)
+
+		const connectionMap = new Map<string, { status: string; id: string }>()
+		for (const conn of userConnections) {
+			const otherUserId =
+				conn.userId === session.user.id ? conn.addresseeId : conn.userId
+			connectionMap.set(otherUserId, { status: conn.status, id: conn.id })
 		}
+
+		// Add connection status to users
+		const usersWithStatus = users.map((u) => {
+			const connectionInfo = connectionMap.get(u.id)
+			return {
+				...u,
+				connectionStatus: connectionInfo
+					? connectionInfo.status === "accepted"
+						? "connected"
+						: "pending"
+					: "none",
+				connectionId: connectionInfo?.id,
+			}
+		})
+
+		results.users = usersWithStatus
+	}
 
 		// Search posts
 		if (type === "all" || type === "posts") {

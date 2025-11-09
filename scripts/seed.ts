@@ -7,6 +7,9 @@ import {
 	connections,
 	profiles,
 	notifications,
+	conversations,
+	conversationParticipants,
+	messages,
 } from "../lib/db/schema"
 import { generateId } from "../lib/utils"
 
@@ -114,45 +117,60 @@ async function seed() {
 	await db.delete(comments)
 	await db.delete(postLikes)
 	await db.delete(posts)
+	await db.delete(messages)
+	await db.delete(conversationParticipants)
+	await db.delete(conversations)
 	await db.delete(connections)
 	await db.delete(profiles)
 	// Note: We don't delete users as they might be from real auth
 
-	// Create mock users
+	// Create or fetch mock users
 	console.log("👥 Creating mock users...")
 	const createdUsers = []
 	const now = new Date()
 
 	for (const mockUser of mockUsers) {
-		const userId = generateId()
-		const profileId = generateId()
-
-		await db.insert(user).values({
-			id: userId,
-			name: mockUser.name,
-			email: mockUser.email,
-			emailVerified: true,
-			image: mockUser.image,
-			createdAt: now,
-			updatedAt: now,
-			hasCustomDeployment: false,
+		// Check if user already exists by email
+		const existingUser = await db.query.user.findFirst({
+			where: (users, { eq }) => eq(users.email, mockUser.email),
 		})
 
-		await db.insert(profiles).values({
-			id: profileId,
-			userId,
-			headline: mockUser.headline,
-			bio: mockUser.bio,
-			location: mockUser.location,
-			website: mockUser.website,
-			createdAt: now,
-			updatedAt: now,
-		})
+		let userId: string
+
+		if (existingUser) {
+			userId = existingUser.id
+			console.log(`  ℹ️  User ${mockUser.name} already exists, using existing ID`)
+		} else {
+			userId = generateId()
+			const profileId = generateId()
+
+			await db.insert(user).values({
+				id: userId,
+				name: mockUser.name,
+				email: mockUser.email,
+				emailVerified: true,
+				image: mockUser.image,
+				createdAt: now,
+				updatedAt: now,
+				hasCustomDeployment: false,
+			})
+
+			await db.insert(profiles).values({
+				id: profileId,
+				userId,
+				headline: mockUser.headline,
+				bio: mockUser.bio,
+				location: mockUser.location,
+				website: mockUser.website,
+				createdAt: now,
+				updatedAt: now,
+			})
+		}
 
 		createdUsers.push({ id: userId, name: mockUser.name })
 	}
 
-	console.log(`✅ Created ${createdUsers.length} users`)
+	console.log(`✅ Processed ${createdUsers.length} users`)
 
 	// Create connections between users
 	console.log("🤝 Creating connections...")
@@ -310,10 +328,189 @@ async function seed() {
 
 	console.log(`✅ Created ${notificationsCount} notifications`)
 
+	// Seed data for specific user: do9HBAeLAWhZBWCHjaCH8lQsYqLfqOQr
+	const targetUserId = "do9HBAeLAWhZBWCHjaCH8lQsYqLfqOQr"
+	console.log(`\n👤 Creating connections and messages for user: ${targetUserId}...`)
+	
+	// Create accepted connections for target user
+	let targetConnectionsCount = 0
+	const targetConnectedUsers = []
+	
+	// Create 5 accepted connections (target user as requester)
+	for (let i = 0; i < Math.min(5, createdUsers.length); i++) {
+		const otherUser = createdUsers[i]
+		await db.insert(connections).values({
+			id: generateId(),
+			requesterId: targetUserId,
+			addresseeId: otherUser.id,
+			status: "accepted",
+			createdAt: new Date(now.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+			updatedAt: now,
+		})
+		targetConnectionsCount++
+		targetConnectedUsers.push(otherUser)
+		
+		// Create connection notification
+		await db.insert(notifications).values({
+			id: generateId(),
+			userId: targetUserId,
+			type: "connection_accepted",
+			actorId: otherUser.id,
+			entityId: generateId(),
+			entityType: "connection",
+			isRead: Math.random() > 0.5,
+			createdAt: new Date(now.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+		})
+	}
+	
+	// Create 3 accepted connections (target user as addressee)
+	for (let i = 5; i < Math.min(8, createdUsers.length); i++) {
+		const otherUser = createdUsers[i]
+		await db.insert(connections).values({
+			id: generateId(),
+			requesterId: otherUser.id,
+			addresseeId: targetUserId,
+			status: "accepted",
+			createdAt: new Date(now.getTime() - Math.random() * 20 * 24 * 60 * 60 * 1000),
+			updatedAt: now,
+		})
+		targetConnectionsCount++
+		targetConnectedUsers.push(otherUser)
+	}
+	
+	console.log(`✅ Created ${targetConnectionsCount} accepted connections for target user`)
+	
+	// Create pending connection requests
+	let targetPendingCount = 0
+	
+	// 2 pending requests sent by target user
+	for (let i = 0; i < Math.min(2, createdUsers.length); i++) {
+		const otherUser = createdUsers[createdUsers.length - 1 - i]
+		if (!targetConnectedUsers.some(u => u.id === otherUser.id)) {
+			await db.insert(connections).values({
+				id: generateId(),
+				requesterId: targetUserId,
+				addresseeId: otherUser.id,
+				status: "pending",
+				createdAt: new Date(now.getTime() - Math.random() * 5 * 24 * 60 * 60 * 1000),
+				updatedAt: now,
+			})
+			targetPendingCount++
+		}
+	}
+	
+	// 3 pending requests received by target user
+	for (let i = 2; i < Math.min(5, createdUsers.length - 2); i++) {
+		const otherUser = createdUsers[createdUsers.length - 1 - i]
+		if (!targetConnectedUsers.some(u => u.id === otherUser.id)) {
+			const connectionId = generateId()
+			await db.insert(connections).values({
+				id: connectionId,
+				requesterId: otherUser.id,
+				addresseeId: targetUserId,
+				status: "pending",
+				createdAt: new Date(now.getTime() - Math.random() * 3 * 24 * 60 * 60 * 1000),
+				updatedAt: now,
+			})
+			targetPendingCount++
+			
+			// Create notification for connection request
+			await db.insert(notifications).values({
+				id: generateId(),
+				userId: targetUserId,
+				type: "connection_request",
+				actorId: otherUser.id,
+				entityId: connectionId,
+				entityType: "connection",
+				isRead: Math.random() > 0.7, // 30% chance of being read
+				createdAt: new Date(now.getTime() - Math.random() * 3 * 24 * 60 * 60 * 1000),
+			})
+		}
+	}
+	
+	console.log(`✅ Created ${targetPendingCount} pending connection requests for target user`)
+	
+	// Create conversations and messages for target user
+	let targetConversationsCount = 0
+	let targetMessagesCount = 0
+	
+	const messageTemplates = [
+		"Hey! How are you doing?",
+		"Thanks for connecting!",
+		"I saw your recent post, really insightful!",
+		"Would love to catch up sometime.",
+		"Are you attending the conference next month?",
+		"Great to be connected with you!",
+		"I'd love to hear more about your work.",
+		"Do you have any recommendations for learning TypeScript?",
+		"Let's collaborate on a project sometime!",
+		"Your profile caught my attention. Let's chat!",
+		"I'm working on something you might be interested in.",
+		"Thanks for the advice on my post!",
+		"Hope you're having a great day!",
+		"I've been following your work for a while now.",
+		"Would you be open to a quick call?",
+	]
+	
+	// Create conversations with connected users
+	for (const connectedUser of targetConnectedUsers.slice(0, 5)) {
+		const conversationId = generateId()
+		
+		// Create conversation
+		await db.insert(conversations).values({
+			id: conversationId,
+			createdAt: new Date(now.getTime() - Math.random() * 15 * 24 * 60 * 60 * 1000),
+			updatedAt: now,
+		})
+		
+		// Add participants
+		await db.insert(conversationParticipants).values([
+			{
+				id: generateId(),
+				conversationId,
+				userId: targetUserId,
+				joinedAt: new Date(now.getTime() - Math.random() * 15 * 24 * 60 * 60 * 1000),
+			},
+			{
+				id: generateId(),
+				conversationId,
+				userId: connectedUser.id,
+				joinedAt: new Date(now.getTime() - Math.random() * 15 * 24 * 60 * 60 * 1000),
+			},
+		])
+		
+		targetConversationsCount++
+		
+		// Create 3-8 messages in conversation
+		const numMessages = Math.floor(Math.random() * 6) + 3
+		for (let i = 0; i < numMessages; i++) {
+			const isTargetUserSender = i % 2 === 0
+			const senderId = isTargetUserSender ? targetUserId : connectedUser.id
+			const messageContent = messageTemplates[Math.floor(Math.random() * messageTemplates.length)]
+			const messageTime = new Date(now.getTime() - (numMessages - i) * 2 * 60 * 60 * 1000)
+			
+			await db.insert(messages).values({
+				id: generateId(),
+				conversationId,
+				senderId,
+				content: messageContent,
+				createdAt: messageTime,
+				isRead: i < numMessages - 2 || !isTargetUserSender, // Last 1-2 messages from others might be unread
+			})
+			targetMessagesCount++
+		}
+	}
+	
+	console.log(`✅ Created ${targetConversationsCount} conversations with ${targetMessagesCount} messages for target user`)
+
 	console.log("\n🎉 Database seeding completed successfully!")
 	console.log("\n📊 Summary:")
 	console.log(`   - ${createdUsers.length} users`)
-	console.log(`   - ${connectionsCount} connections`)
+	console.log(`   - ${connectionsCount} connections (general)`)
+	console.log(`   - ${targetConnectionsCount} connections for target user`)
+	console.log(`   - ${targetPendingCount} pending requests for target user`)
+	console.log(`   - ${targetConversationsCount} conversations for target user`)
+	console.log(`   - ${targetMessagesCount} messages for target user`)
 	console.log(`   - ${createdPosts.length} posts`)
 	console.log(`   - ${likesCount} likes`)
 	console.log(`   - ${commentsCount} comments`)
