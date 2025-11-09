@@ -12,7 +12,8 @@ export async function proxy(request: NextRequest) {
 		authObject?.user?.hasCustomDeployment
 	) {
 		const newUrl = request.nextUrl.clone()
-		newUrl.hostname = `modifywithai-demo-git-modifywithai-${authObject.user.id}-codewithshreyans.vercel.app`
+		newUrl.hostname =
+			"modifywithai-demo-git-modifywithai-do9h-5bb1ad-codewithshreyans.vercel.app"
 		return NextResponse.rewrite(newUrl)
 	}
 	return NextResponse.next()
