@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 						eq(connections.requesterId, session.user.id),
 						eq(connections.addresseeId, session.user.id),
 					),
-					eq(connections.status, status),
+					eq(connections.status, status as "pending" | "accepted" | "rejected"),
 				),
 			)
 
@@ -162,4 +162,3 @@ export async function POST(request: NextRequest) {
 		)
 	}
 }
-

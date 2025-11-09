@@ -36,7 +36,11 @@ export default async function ProfilePage() {
 			<div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
 				<div className="space-y-6">
 					<ProfileHeader
-						user={session.user}
+						user={{
+							name: session.user.name || "",
+							email: session.user.email || "",
+							image: session.user.image || "",
+						}}
 						profile={profile}
 						isOwnProfile={true}
 					/>
@@ -46,4 +50,3 @@ export default async function ProfilePage() {
 		</div>
 	)
 }
-

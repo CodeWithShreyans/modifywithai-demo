@@ -4,11 +4,20 @@ import { useEffect, useState } from "react"
 import { ConnectionCard } from "./connection-card"
 
 interface ConnectionListProps {
-	status?: "accepted" | "pending"
+	status?: "pending" | "accepted" | "rejected"
 }
 
-export function ConnectionList({ status = "accepted" }: ConnectionListProps) {
-	const [connections, setConnections] = useState<Array<any>>([])
+export function ConnectionList({ status = "pending" }: ConnectionListProps) {
+	const [connections, setConnections] = useState<
+		Array<{
+			id: string
+			userId: string
+			userName: string
+			userEmail: string
+			userImage: string
+			isRequester: string
+		}>
+	>([])
 	const [loading, setLoading] = useState(true)
 
 	const fetchConnections = async () => {
@@ -31,7 +40,10 @@ export function ConnectionList({ status = "accepted" }: ConnectionListProps) {
 		return (
 			<div className="space-y-4">
 				{[...Array(5)].map((_, i) => (
-					<div key={i} className="animate-pulse rounded-lg border border-gray-200 bg-white p-4">
+					<div
+						key={i}
+						className="animate-pulse rounded-lg border border-gray-200 bg-white p-4"
+					>
 						<div className="flex items-start gap-3">
 							<div className="h-12 w-12 rounded-full bg-gray-200" />
 							<div className="flex-1">
@@ -60,7 +72,10 @@ export function ConnectionList({ status = "accepted" }: ConnectionListProps) {
 	return (
 		<div className="space-y-4">
 			{connections.map((connection) => (
-				<div key={connection.id} className="rounded-lg border border-gray-200 bg-white p-4">
+				<div
+					key={connection.id}
+					className="rounded-lg border border-gray-200 bg-white p-4"
+				>
 					<ConnectionCard
 						user={{
 							id: connection.userId,
@@ -68,7 +83,7 @@ export function ConnectionList({ status = "accepted" }: ConnectionListProps) {
 							email: connection.userEmail,
 							image: connection.userImage,
 						}}
-						connectionStatus={status}
+						connectionStatus={status as "pending" | "none" | "connected"}
 						connectionId={connection.id}
 						onConnectionChange={fetchConnections}
 					/>
@@ -77,4 +92,3 @@ export function ConnectionList({ status = "accepted" }: ConnectionListProps) {
 		</div>
 	)
 }
-
