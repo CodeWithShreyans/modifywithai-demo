@@ -12,6 +12,8 @@ export function Navbar() {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [aiInput, setAiInput] = useState("")
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [showConfirmReset, setShowConfirmReset] = useState(false)
+	const [isResetting, setIsResetting] = useState(false)
 
 	useEffect(() => {
 		if (session?.user) {
@@ -36,6 +38,33 @@ export function Navbar() {
 			return () => clearInterval(interval)
 		}
 	}, [session])
+
+	const handleReset = async () => {
+		setIsResetting(true)
+		try {
+			const response = await fetch("/api/reset", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			})
+
+			if (response.ok) {
+				console.log("Successfully reset to default")
+				// Reload the page to show default version
+				window.location.reload()
+			} else {
+				console.error("Failed to reset:", response.statusText)
+				alert("Failed to reset modifications. Please try again.")
+			}
+		} catch (error) {
+			console.error("Error resetting:", error)
+			alert("Failed to reset modifications. Please try again.")
+		} finally {
+			setIsResetting(false)
+			setShowConfirmReset(false)
+		}
+	}
 
 	if (!session?.user) {
 		return null
@@ -204,24 +233,32 @@ export function Navbar() {
 							<h2 className="text-xl font-semibold text-gray-900">
 								Modify With AI
 							</h2>
-							<button
-								onClick={() => setIsModalOpen(false)}
-								className="rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-							>
-								<svg
-									className="h-6 w-6"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
+							<div className="flex items-center gap-2">
+								<button
+									onClick={() => setShowConfirmReset(true)}
+									className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
 								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M6 18L18 6M6 6l12 12"
-									/>
-								</svg>
-							</button>
+									Reset to default
+								</button>
+								<button
+									onClick={() => setIsModalOpen(false)}
+									className="rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+								>
+									<svg
+										className="h-6 w-6"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M6 18L18 6M6 6l12 12"
+										/>
+									</svg>
+								</button>
+							</div>
 						</div>
 
 						<div className="p-6">
@@ -285,6 +322,61 @@ export function Navbar() {
 						>
 							{isSubmitting ? "Submitting..." : "Submit"}
 						</button>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Confirmation Modal */}
+			{showConfirmReset && (
+				<div 
+					className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
+					onClick={() => setShowConfirmReset(false)}
+				>
+					<div 
+						className="relative w-full max-w-md rounded-lg bg-white shadow-2xl"
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div className="p-6">
+							<div className="mb-4 flex items-center justify-center">
+								<div className="rounded-full bg-red-100 p-3">
+									<svg
+										className="h-6 w-6 text-red-600"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+										/>
+									</svg>
+								</div>
+							</div>
+							<h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+								Reset to Default?
+							</h3>
+							<p className="mb-6 text-center text-sm text-gray-600">
+								This will permanently delete all your modifications and return the app to its default state. This action cannot be undone.
+							</p>
+							<div className="flex gap-3">
+								<button
+									onClick={() => setShowConfirmReset(false)}
+									disabled={isResetting}
+									className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+								>
+									Cancel
+								</button>
+								<button
+									onClick={handleReset}
+									disabled={isResetting}
+									className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+								>
+									{isResetting ? "Resetting..." : "Reset"}
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
