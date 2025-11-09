@@ -1,9 +1,18 @@
+import { auth } from "@/lib/auth"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
 	try {
 		const body = await req.json()
 		const { prompt } = body
+
+		const session = await auth.api.getSession({
+			headers: req.headers,
+		})
+
+		if (!session?.user) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+		}
 
 		if (!prompt) {
 			return NextResponse.json({ error: "Prompt is required" }, { status: 400 })
@@ -16,7 +25,7 @@ export async function POST(req: NextRequest) {
 				"x-api-key": process.env.MODIFYWITHAI_API_KEY || "",
 			},
 			body: JSON.stringify({
-				userId: "123",
+				userId: session.user.id,
 				prompt,
 				githubUsername: "codewithshreyans",
 				githubRepo: "modifywithai-demo",
