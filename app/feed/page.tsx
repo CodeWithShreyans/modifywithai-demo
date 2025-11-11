@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { Navbar } from "@/components/navbar"
 import { Sidebar } from "@/components/sidebar"
-import { RightSidebar } from "@/components/right-sidebar"
 import { Feed } from "@/components/feed"
 
 export default async function FeedPage() {
@@ -23,11 +22,8 @@ export default async function FeedPage() {
 					<div className="lg:col-span-3">
 						<Sidebar />
 					</div>
-					<div className="lg:col-span-6">
+					<div className="lg:col-span-9">
 						<Feed />
-					</div>
-					<div className="lg:col-span-3">
-						<RightSidebar />
 					</div>
 				</div>
 			</div>
