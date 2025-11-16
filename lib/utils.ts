@@ -1,6 +1,6 @@
-import { randomBytes } from "crypto"
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
 
-export function generateId(): string {
-	return randomBytes(16).toString("hex")
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }
-

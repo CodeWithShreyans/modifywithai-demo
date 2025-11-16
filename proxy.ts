@@ -5,7 +5,6 @@ export async function proxy(request: NextRequest) {
 	const authObject = await auth.api.getSession({
 		headers: request.headers,
 	})
-	console.log(authObject)
 	if (
 		process.env.VERCEL_ENV === "production" &&
 		!request.nextUrl.searchParams.has("donotrewrite") &&
