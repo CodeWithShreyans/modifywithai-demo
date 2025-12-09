@@ -165,66 +165,71 @@ export function ChartAreaInteractive() {
   })
 
   return (
-    <Card className="@container/card">
-      <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
-        <CardDescription>
-          <span className="hidden @[540px]/card:block">
+    <Card className="@container/card" id="chart-area-interactive-card">
+      <CardHeader id="chart-area-interactive-card-header">
+        <CardTitle id="chart-area-interactive-card-title">Total Visitors</CardTitle>
+        <CardDescription id="chart-area-interactive-card-description">
+          <span className="hidden @[540px]/card:block" id="chart-area-interactive-card-description-full">
             Total for the last 3 months
           </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="@[540px]/card:hidden" id="chart-area-interactive-card-description-short">Last 3 months</span>
         </CardDescription>
-        <CardAction>
+        <CardAction id="chart-area-interactive-card-action">
           <ToggleGroup
             type="single"
             value={timeRange}
             onValueChange={setTimeRange}
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
+            id="chart-area-interactive-toggle-group"
           >
-            <ToggleGroupItem value="90d">Last 3 months</ToggleGroupItem>
-            <ToggleGroupItem value="30d">Last 30 days</ToggleGroupItem>
-            <ToggleGroupItem value="7d">Last 7 days</ToggleGroupItem>
+            <ToggleGroupItem value="90d" id="chart-area-interactive-toggle-group-item-90d">Last 3 months</ToggleGroupItem>
+            <ToggleGroupItem value="30d" id="chart-area-interactive-toggle-group-item-30d">Last 30 days</ToggleGroupItem>
+            <ToggleGroupItem value="7d" id="chart-area-interactive-toggle-group-item-7d">Last 7 days</ToggleGroupItem>
           </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeRange} onValueChange={setTimeRange} id="chart-area-interactive-select">
             <SelectTrigger
               className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
               size="sm"
               aria-label="Select a value"
+              id="chart-area-interactive-select-trigger"
             >
-              <SelectValue placeholder="Last 3 months" />
+              <SelectValue placeholder="Last 3 months" id="chart-area-interactive-select-value" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="90d" className="rounded-lg">
+            <SelectContent className="rounded-xl" id="chart-area-interactive-select-content">
+              <SelectItem value="90d" className="rounded-lg" id="chart-area-interactive-select-item-90d">
                 Last 3 months
               </SelectItem>
-              <SelectItem value="30d" className="rounded-lg">
+              <SelectItem value="30d" className="rounded-lg" id="chart-area-interactive-select-item-30d">
                 Last 30 days
               </SelectItem>
-              <SelectItem value="7d" className="rounded-lg">
+              <SelectItem value="7d" className="rounded-lg" id="chart-area-interactive-select-item-7d">
                 Last 7 days
               </SelectItem>
             </SelectContent>
           </Select>
         </CardAction>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6" id="chart-area-interactive-card-content">
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
+          id="chart-area-interactive-chart-container"
         >
-          <AreaChart data={filteredData}>
-            <defs>
+          <AreaChart data={filteredData} id="chart-area-interactive-area-chart">
+            <defs id="chart-area-interactive-defs">
               <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="var(--color-desktop)"
                   stopOpacity={1.0}
+                  id="chart-area-interactive-desktop-gradient-stop-1"
                 />
                 <stop
                   offset="95%"
                   stopColor="var(--color-desktop)"
                   stopOpacity={0.1}
+                  id="chart-area-interactive-desktop-gradient-stop-2"
                 />
               </linearGradient>
               <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
@@ -232,15 +237,17 @@ export function ChartAreaInteractive() {
                   offset="5%"
                   stopColor="var(--color-mobile)"
                   stopOpacity={0.8}
+                  id="chart-area-interactive-mobile-gradient-stop-1"
                 />
                 <stop
                   offset="95%"
                   stopColor="var(--color-mobile)"
                   stopOpacity={0.1}
+                  id="chart-area-interactive-mobile-gradient-stop-2"
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false} id="chart-area-interactive-cartesian-grid" />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -254,6 +261,7 @@ export function ChartAreaInteractive() {
                   day: "numeric",
                 })
               }}
+              id="chart-area-interactive-x-axis"
             />
             <ChartTooltip
               cursor={false}
@@ -266,8 +274,10 @@ export function ChartAreaInteractive() {
                     })
                   }}
                   indicator="dot"
+                  id="chart-area-interactive-tooltip-content"
                 />
               }
+              id="chart-area-interactive-tooltip"
             />
             <Area
               dataKey="mobile"
@@ -275,6 +285,7 @@ export function ChartAreaInteractive() {
               fill="url(#fillMobile)"
               stroke="var(--color-mobile)"
               stackId="a"
+              id="chart-area-interactive-area-mobile"
             />
             <Area
               dataKey="desktop"
@@ -282,6 +293,7 @@ export function ChartAreaInteractive() {
               fill="url(#fillDesktop)"
               stroke="var(--color-desktop)"
               stackId="a"
+              id="chart-area-interactive-area-desktop"
             />
           </AreaChart>
         </ChartContainer>

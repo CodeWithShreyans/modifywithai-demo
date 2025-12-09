@@ -16,15 +16,22 @@ export default function Page() {
 					"--header-height": "calc(var(--spacing) * 12)",
 				} as React.CSSProperties
 			}
+			id="page-sidebar-provider"
 		>
 			<AppSidebar variant="inset" />
-			<SidebarInset>
+			<SidebarInset id="page-sidebar-inset">
 				<SiteHeader />
-				<div className="flex flex-1 flex-col">
-					<div className="@container/main flex flex-1 flex-col gap-2">
-						<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+				<div className="flex flex-1 flex-col" id="page-main-content">
+					<div
+						className="@container/main flex flex-1 flex-col gap-2"
+						id="page-main-container"
+					>
+						<div
+							className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"
+							id="page-content-wrapper"
+						>
 							<SectionCards />
-							<div className="px-4 lg:px-6">
+							<div className="px-4 lg:px-6" id="page-chart-wrapper">
 								<ChartAreaInteractive />
 							</div>
 							<DataTable data={data} />

@@ -147,28 +147,29 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
+    <Sidebar collapsible="offcanvas" {...props} id="app-sidebar">
+      <SidebarHeader id="app-sidebar-header">
+        <SidebarMenu id="app-sidebar-header-menu">
+          <SidebarMenuItem id="app-sidebar-header-menu-item">
             <SidebarMenuButton
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
+              id="app-sidebar-header-menu-button"
             >
-              <a href="#">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+              <a href="#" id="app-sidebar-header-logo-link">
+                <IconInnerShadowTop className="!size-5" id="app-sidebar-header-logo-icon" />
+                <span className="text-base font-semibold" id="app-sidebar-header-logo-text">Acme Inc.</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent id="app-sidebar-content">
         <NavMain items={data.navMain} />
         <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter id="app-sidebar-footer">
         <NavUser />
       </SidebarFooter>
     </Sidebar>

@@ -48,13 +48,13 @@ export function NavUser() {
   // Show loading state
   if (isPending) {
     return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton size="lg" disabled>
-            <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <div className="h-4 w-24 bg-muted rounded animate-pulse" />
-              <div className="h-3 w-32 bg-muted rounded animate-pulse mt-1" />
+      <SidebarMenu id="nav-user-menu-loading">
+        <SidebarMenuItem id="nav-user-menu-item-loading">
+          <SidebarMenuButton size="lg" disabled id="nav-user-menu-button-loading">
+            <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" id="nav-user-loading-avatar" />
+            <div className="grid flex-1 text-left text-sm leading-tight" id="nav-user-loading-text-container">
+              <div className="h-4 w-24 bg-muted rounded animate-pulse" id="nav-user-loading-text-line-1" />
+              <div className="h-3 w-32 bg-muted rounded animate-pulse mt-1" id="nav-user-loading-text-line-2" />
             </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -65,16 +65,17 @@ export function NavUser() {
   // Show sign in button when not authenticated
   if (!session?.user) {
     return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton size="lg" asChild>
+      <SidebarMenu id="nav-user-menu-signin">
+        <SidebarMenuItem id="nav-user-menu-item-signin">
+          <SidebarMenuButton size="lg" asChild id="nav-user-menu-button-signin">
             <Button
               onClick={handleSignIn}
               className="w-full justify-start"
               variant="ghost"
+              id="nav-user-button-signin"
             >
-              <IconUserCircle className="h-8 w-8" />
-              <span className="text-sm">Sign in with GitHub</span>
+              <IconUserCircle className="h-8 w-8" id="nav-user-icon-signin" />
+              <span className="text-sm" id="nav-user-text-signin">Sign in with GitHub</span>
             </Button>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -97,27 +98,28 @@ export function NavUser() {
     .slice(0, 2)
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+    <SidebarMenu id="nav-user-menu-authenticated">
+      <SidebarMenuItem id="nav-user-menu-item-authenticated">
+        <DropdownMenu id="nav-user-dropdown-menu">
+          <DropdownMenuTrigger asChild id="nav-user-dropdown-trigger">
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              id="nav-user-menu-button-authenticated"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={userAvatar} alt={userName} />
-                <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-lg grayscale" id="nav-user-avatar-button">
+                <AvatarImage src={userAvatar} alt={userName} id="nav-user-avatar-image-button" />
+                <AvatarFallback className="rounded-lg" id="nav-user-avatar-fallback-button">{initials}</AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{userName}</span>
+              <div className="grid flex-1 text-left text-sm leading-tight" id="nav-user-info-container-button">
+                <span className="truncate font-medium" id="nav-user-name-button">{userName}</span>
                 {userEmail && (
-                  <span className="text-muted-foreground truncate text-xs">
+                  <span className="text-muted-foreground truncate text-xs" id="nav-user-email-button">
                     {userEmail}
                   </span>
                 )}
               </div>
-              <IconDotsVertical className="ml-auto size-4" />
+              <IconDotsVertical className="ml-auto size-4" id="nav-user-dots-icon-button" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -125,42 +127,43 @@ export function NavUser() {
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
+            id="nav-user-dropdown-content"
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={userAvatar} alt={userName} />
-                  <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+            <DropdownMenuLabel className="p-0 font-normal" id="nav-user-dropdown-label">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm" id="nav-user-dropdown-label-container">
+                <Avatar className="h-8 w-8 rounded-lg" id="nav-user-avatar-dropdown">
+                  <AvatarImage src={userAvatar} alt={userName} id="nav-user-avatar-image-dropdown" />
+                  <AvatarFallback className="rounded-lg" id="nav-user-avatar-fallback-dropdown">{initials}</AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{userName}</span>
+                <div className="grid flex-1 text-left text-sm leading-tight" id="nav-user-info-container-dropdown">
+                  <span className="truncate font-medium" id="nav-user-name-dropdown">{userName}</span>
                   {userEmail && (
-                    <span className="text-muted-foreground truncate text-xs">
+                    <span className="text-muted-foreground truncate text-xs" id="nav-user-email-dropdown">
                       {userEmail}
                     </span>
                   )}
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
+            <DropdownMenuSeparator id="nav-user-dropdown-separator-1" />
+            <DropdownMenuGroup id="nav-user-dropdown-group">
+              <DropdownMenuItem id="nav-user-dropdown-item-account">
+                <IconUserCircle id="nav-user-dropdown-icon-account" />
+                <span id="nav-user-dropdown-text-account">Account</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
+              <DropdownMenuItem id="nav-user-dropdown-item-billing">
+                <IconCreditCard id="nav-user-dropdown-icon-billing" />
+                <span id="nav-user-dropdown-text-billing">Billing</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
+              <DropdownMenuItem id="nav-user-dropdown-item-notifications">
+                <IconNotification id="nav-user-dropdown-icon-notifications" />
+                <span id="nav-user-dropdown-text-notifications">Notifications</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
-              <IconLogout />
-              Log out
+            <DropdownMenuSeparator id="nav-user-dropdown-separator-2" />
+            <DropdownMenuItem onClick={handleSignOut} id="nav-user-dropdown-item-logout">
+              <IconLogout id="nav-user-dropdown-icon-logout" />
+              <span id="nav-user-dropdown-text-logout">Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

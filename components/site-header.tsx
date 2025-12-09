@@ -4,23 +4,25 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 
 export function SiteHeader() {
   return (
-    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-        <SidebarTrigger className="-ml-1" />
+    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)" id="site-header">
+      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6" id="site-header-container">
+        <SidebarTrigger className="-ml-1" id="site-header-sidebar-trigger" />
         <Separator
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
+          id="site-header-separator"
         />
-        <h1 className="text-base font-medium">Documents</h1>
-        <div className="ml-auto flex items-center gap-2">
-          <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
+        <h1 className="text-base font-medium" id="site-header-title">Documents</h1>
+        <div className="ml-auto flex items-center gap-2" id="site-header-actions">
+          <Button variant="ghost" asChild size="sm" className="hidden sm:flex" id="site-header-button-github">
             <a
               href="https://github.com/shadcn-ui/ui/tree/main/apps/v4/app/(examples)/dashboard"
               rel="noopener noreferrer"
               target="_blank"
               className="dark:text-foreground"
+              id="site-header-link-github"
             >
-              GitHub
+              <span id="site-header-link-github-text">GitHub</span>
             </a>
           </Button>
         </div>
