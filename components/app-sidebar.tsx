@@ -18,6 +18,7 @@ import {
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react"
+import { MWAIButton } from "modifywithai"
 
 import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
@@ -170,6 +171,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter id="app-sidebar-footer">
+        <MWAIButton side="top" align="start" triggerVariant="outline" />
         <NavUser />
       </SidebarFooter>
     </Sidebar>

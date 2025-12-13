@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import { ModifyWithAIComponents, MWAIHead } from "modifywithai"
+import { MWAIComponents, MWAIHead, MWAIProvider } from "modifywithai"
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -33,7 +33,9 @@ export default function RootLayout({
 				id="root-body"
 			>
 				<div id="root-children">{children}</div>
-				<ModifyWithAIComponents />
+				<MWAIProvider id="user_E5z5yRzSq7sA6WjwkKC4wR">
+					<MWAIComponents />
+				</MWAIProvider>
 			</body>
 		</html>
 	)
